@@ -23,15 +23,30 @@ function App() {
   function handleAddToy(newToy) {
     setToys((currentToys) => [...currentToys, newToy]);
   }
-function handleDeleteToy(id) {
-  fetch(`http://localhost:3001/toys/${id}`, {
-    method: "DELETE",
-  }).then(() => {
-    setToys((currentToys) =>
-      currentToys.filter((toy) => toy.id !== id)
-    );
-  });
-}
+  function handleDeleteToy(id) {
+    fetch(`http://localhost:3001/toys/${id}`, {
+      method: "DELETE",
+    }).then(() => {
+      setToys((currentToys) => currentToys.filter((toy) => toy.id !== id));
+    });
+  }
+  function handleLikeToy(id) {
+    fetch(`http://localhost:3001/toys/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        likes: toys.find((toy) => toy.id === id).likes + 1,
+      }),
+    })
+      .then((response) => response.json())
+      .then((updatedToy) => {
+        setToys((currentToys) =>
+          currentToys.map((toy) => (toy.id === id ? updatedToy : toy)),
+        );
+      });
+  }
   return (
     <>
       <Header />
@@ -41,7 +56,11 @@ function handleDeleteToy(id) {
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
-<ToyContainer toys={toys} onDeleteToy={handleDeleteToy} />
+      <ToyContainer
+        toys={toys}
+        onDeleteToy={handleDeleteToy}
+        onLikeToy={handleLikeToy}
+      />
     </>
   );
 }
