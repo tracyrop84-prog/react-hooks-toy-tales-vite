@@ -8,20 +8,27 @@ function App() {
   const [showForm, setShowForm] = useState(false);
   const [toys, setToys] = useState([]);
 
+  // Get all toys when the application loads
+  useEffect(() => {
+    fetch("http://localhost:3001/toys")
+      .then((response) => response.json())
+      .then((toys) => setToys(toys));
+  }, []);
+
   function handleClick() {
     setShowForm((showForm) => !showForm);
   }
 
-  useEffect(() => {
-    fetch("http://localhost:3001/toys")
-      .then((response) => response.json())
-      .then((data) => setToys(data));
-  }, []);
+  // Add the newly created toy to our state
+  function handleAddToy(newToy) {
+    setToys((currentToys) => [...currentToys, newToy]);
+  }
 
   return (
     <>
       <Header />
-      {showForm ? <ToyForm /> : null}
+
+      {showForm ? <ToyForm onAddToy={handleAddToy} /> : null}
 
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
